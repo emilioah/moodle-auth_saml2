@@ -115,7 +115,7 @@ if ($ADMIN->fulltree) {
         'auth_saml2/nameidpolicy',
         get_string('nameidpolicy', 'auth_saml2'),
         get_string('nameidpolicy_help', 'auth_saml2'),
-        'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+        'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
         array_combine($nameidlist, $nameidlist));
     $nameidpolicy->set_updatedcallback('auth_saml2_update_sp_metadata');
     $settings->add($nameidpolicy);
@@ -188,9 +188,7 @@ if ($ADMIN->fulltree) {
 
     $assertionsconsumerservices = [
         'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'HTTP Post',
-        'urn:oasis:names:tc:SAML:1.0:profiles:browser-post' => 'Browser post profile',
         'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => 'HTTP Artifact',
-        'urn:oasis:names:tc:SAML:1.0:profiles:artifact-01' => 'Artifact 01 profile',
         'urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser' => 'Holder-of-Key Web Browser SSO',
     ];
 
@@ -247,6 +245,13 @@ if ($ADMIN->fulltree) {
             PARAM_URL
         ));
     }
+
+    $settings->add(new admin_setting_configiplist(
+        'auth_saml2/noredirectips',
+        get_string('noredirectips', 'auth_saml2'),
+        get_string('noredirectips_help', 'auth_saml2'),
+        ''
+    ));
 
     // Auto login.
     $autologinoptions = [
@@ -361,6 +366,16 @@ urn:mace:dir:attribute-def:mail *</pre>"]),
         get_string('attemptsignout_help', 'auth_saml2'),
         1,
         $yesno));
+
+    // SAMLPHP tempdir
+    $settings->add(new admin_setting_configtext(
+        'auth_saml2/tempdir',
+        get_string('tempdir', 'auth_saml2'),
+        get_string('tempdir_help', 'auth_saml2'),
+        get_string('tempdirdefault', 'auth_saml2'),
+        PARAM_TEXT,
+        50,
+        3));
 
     // SAMLPHP version.
     $authplugin = get_auth_plugin('saml2');

@@ -25,6 +25,10 @@
 /**
  * Check if we have the saml=on param set. If so, disable guest access and force the user to log in with saml.
  *
+ * This is an implementation of a legacy callback that will only be called in older Moodle versions.
+ * It will not be called in Moodle 4.5+ that contain the hook core\hook\after_config,
+ * instead, the callback auth_saml2\local\hooks\after_config::callback will be executed.
+ *
  * @since  Moodle 3.8
  * @return void
  */
@@ -49,10 +53,9 @@ function auth_saml2_after_config() {
 /**
  * Callback immediately after require_login succeeds.
  *
- * This callback requires Moodle 3.7+. On earlier versions this will not run. It also won't run
- * on pages which don't call require_login, so we use the _before_http_headers() callback too.
- *
- * @since Moodle 3.7
+ * This is an implementation of a legacy callback that will only be called in older Moodle versions.
+ * It will not be called in Moodle 4.4+ that contain the hook core\hook\output\before_http_headers,
+ * instead, the callback auth_saml2\local\hooks\output\before_http_headers::callback will be executed.
  */
 function auth_saml2_after_require_login() {
     \auth_saml2\auto_login::process();
