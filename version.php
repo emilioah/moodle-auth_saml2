@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
- *
+ * Version information (Soporte para Redis Sentinel)
+ * 
  * @package    auth_saml2
- * @copyright  Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  Brendan Heywood <brendan@catalyst-au.net>.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2025021600;    // The current plugin version (Date: YYYYMMDDXX).
-$plugin->release   = 2024121600;    // Match release exactly to version.
+$plugin->release   = 2025031800;    // Match release exactly to version.
 $plugin->requires  = 2024100700;    // Requires Moodle 4.5
 $plugin->component = 'auth_saml2';  // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
