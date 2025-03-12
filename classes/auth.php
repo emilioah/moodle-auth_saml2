@@ -1027,7 +1027,7 @@ class auth extends \auth_plugin_base {
 
                                 // We don't want Mapping Moodle field or username to be updated once they are set on user creation.
                                 if (!$newuser) {
-                                    if ($field == $this->config->mdlattr || $field == 'username') {
+                                    if ($field == $this->config->mdlattr) {
                                         $this->log(__FUNCTION__ .
                                             " user '$user->username' $field can't be updated once set");
                                         \core\notification::warning("Your $field wasn't updated");
