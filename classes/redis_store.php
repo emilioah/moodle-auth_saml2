@@ -27,8 +27,6 @@ namespace auth_saml2;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/sentinel.php');
-
 /**
  * Redis store simpleSAMLphp class for auth/saml2.
  *
@@ -83,7 +81,7 @@ class redis_store implements \SimpleSAML\Store\StoreInterface {
      * @param string $key
      * @return mixed|null
      */
-    public function get($type, $key) {
+    public function get($type, $key): mixed {
         $value = $this->redis->get($this->make_key($type, $key));
         if ($value === false) {
             $value = null;
