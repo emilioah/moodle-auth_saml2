@@ -113,7 +113,7 @@ class redis_store implements \SimpleSAML\Store\StoreInterface {
         }        
         if (!empty($CFG->auth_saml2_redissentinel_servers) && !empty($CFG->auth_saml2_redissentinel_group)) {
             $mastergroup = $CFG->auth_saml2_redissentinel_group;
-            $sentinelpassword = !empty($CFG->auth_saml2_redissentinel_password) ? $CFG->auth_saml2_redissentinel_password : null;
+            $sentinelpassword = ($CFG->auth_saml2_redissentinel_password) ?? '';    
             $trimmedservers = explode(',',$CFG->auth_saml2_redissentinel_servers);
             try {
                 //$sentinel = new sentinel($servers);
@@ -149,6 +149,40 @@ class redis_store implements \SimpleSAML\Store\StoreInterface {
                 $redis->auth($CFG->auth_saml2_redis_password);
         }
         return $redis;
+    }
+
+    protected function get_sentinel_master(array $sentinels, string $sentinelpassword, string $mastergroup ): object|false {        
+        foreach ($sentinels as $sentinel) {
+            if (strpos($sentinel, ':') !== false) {
+                [$sentinelhost, $sentinelport] = explode(':', $sentinel, 2);
+                $sentinelport = (int)$sentinelport;
+            } else {
+                $sentinelhost = $sentinel;
+                $sentinelport = $this->sentinelport;
+            }
+
+            try {
+                $sentinelconnection = [
+                    'host' => $sentinelhost,
+                    'port' => $sentinelport,
+                    'retryInterval' => rand(100, 500),
+                ];
+                if ($sentinelpassword !== ''){
+                    $sentinelconnection ['auth'] = $sentinelpassword;
+                }
+
+                $conn = new \RedisSentinel($sentinelconnection);
+                $result = $conn->getMasterAddrByName($mastergroup);
+                if (is_array($result) && count($result) === 2) {
+                    return (object) ['ip' => $result[0], 'port' => (int)$result[1]];
+                }
+            } catch (RedisException $e) {
+                debugging(
+                    "Redis Sentinel: failed to query {$sentinelhost}:{$sentinelport}: " . $e->getMessage()
+                );
+            }
+        }
+        return false;
     }
 
     /**
