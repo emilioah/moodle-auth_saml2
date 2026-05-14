@@ -112,10 +112,13 @@ class redis_store implements \SimpleSAML\Store\StoreInterface {
             throw new \coding_exception('Redis class not found, Redis PHP Extension is probably not installed');
         }        
         if (!empty($CFG->auth_saml2_redissentinel_servers) && !empty($CFG->auth_saml2_redissentinel_group)) {
-            $servers = explode(',',$CFG->auth_saml2_redissentinel_servers);
+            $mastergroup = $CFG->auth_saml2_redissentinel_group;
+            $sentinelpassword = !empty($CFG->auth_saml2_redissentinel_password) ? $CFG->auth_saml2_redissentinel_password : null;
+            $trimmedservers = explode(',',$CFG->auth_saml2_redissentinel_servers);
             try {
-                $sentinel = new sentinel($servers);
-                $master = $sentinel->get_master_addr($CFG->auth_saml2_redissentinel_group);
+                //$sentinel = new sentinel($servers);
+                //$master = $sentinel->get_master_addr($CFG->auth_saml2_redissentinel_group);
+                $master = $this->get_sentinel_master($trimmedservers, $sentinelpassword, $mastergroup);
             } catch(Exception $e) {
                     debugging('Unable to connect to Redis Sentinel servers: '.$CFG->auth_saml2_redissentinel_servers, DEBUG_ALL);
                 return;
@@ -141,6 +144,9 @@ class redis_store implements \SimpleSAML\Store\StoreInterface {
         }
         if (!$redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP)) {
             throw new \coding_exception('Could not set Redis serializer option to PHP Serializer');
+        }
+        if (!empty($CFG->auth_saml2_redis_password)) {
+                $redis->auth($CFG->auth_saml2_redis_password);
         }
         return $redis;
     }
